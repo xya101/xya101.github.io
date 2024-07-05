@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Chain Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #game-container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input {
+            margin: 10px 0;
+            padding: 5px;
+        }
+        button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Word Chain Game</h1>
+        <p id="current-word">Starting word: <span id="word">apple</span></p>
+        <p id="current-player">Player 1's turn</p>
+        <input type="text" id="input-word" placeholder="Enter a word">
+        <button onclick="submitWord()">Submit</button>
+        <p id="score">Scores: Player 1: 0 | Player 2: 0 | Player 3: 0</p>
+    </div>
+
+    <script>
+        let currentWord = "apple";
+        let currentPlayer = 1;
+        let scores = [0, 0, 0];
+
+        function submitWord() {
+            const inputWord = document.getElementById("input-word").value.toLowerCase();
+            const lastLetter = currentWord[currentWord.length - 1];
+
+            if (inputWord[0] === lastLetter && inputWord.length > 1) {
+                currentWord = inputWord;
+                document.getElementById("word").textContent = currentWord;
+                scores[currentPlayer - 1]++;
+                updateScore();
+                nextPlayer();
+            } else {
+                alert("Invalid word! The word must start with the last letter of the previous word.");
+            }
+
+            document.getElementById("input-word").value = "";
+        }
+
+        function nextPlayer() {
+            currentPlayer = currentPlayer % 3 + 1;
+            document.getElementById("current-player").textContent = `Player ${currentPlayer}'s turn`;
+        }
+
+        function updateScore() {
+            document.getElementById("score").textContent = `Scores: Player 1: ${scores[0]} | Player 2: ${scores[1]} | Player 3: ${scores[2]}`;
+        }
+    </script>
+</body>
+</html>

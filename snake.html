@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Snake Game</h1>
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <div id="scoreBoard">
+            <p>Player 1 Score: <span id="score1">0</span></p>
+            <p>Player 2 Score: <span id="score2">0</span></p>
+        </div>
+        <div id="timer">Time: <span id="timeLeft">60</span> seconds</div>
+        <div id="instructions">
+            <p>Player 1 (Green): Arrow keys</p>
+            <p>Player 2 (Blue): WASD keys</p>
+        </div>
+        <a href="index.html" class="game-button">Back to Home</a>
+    </div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreBoard1 = document.getElementById('score1');
+        const scoreBoard2 = document.getElementById('score2');
+        const timerDisplay = document.getElementById('timeLeft');
+
+        const gridSize = 20;
+        const tileCount = canvas.width / gridSize;
+
+        class Snake {
+            constructor(color, initialX, initialY) {
+                this.color = color;
+                this.x = initialX;
+                this.y = initialY;
+                this.dx = 0;
+                this.dy = 0;
+                this.tail = [];
+                this.length = 1;
+                this.score = 0;
+            }
+
+            move() {
+                for (let i = 0; i < this.tail.length - 1; i++) {
+                    this.tail[i] = { ...this.tail[i + 1] };
+                }
+                if (this.length > 1) {
+                    this.tail[this.length - 2] = { x: this.x, y: this.y };
+                }
+                this.x += this.dx;
+                this.y += this.dy;
+
+                if (this.x < 0) this.x = tileCount - 1;
+                if (this.x > tileCount - 1) this.x = 0;
+                if (this.y < 0) this.y = tileCount - 1;
+                if (this.y > tileCount - 1) this.y = 0;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x * gridSize, this.y * gridSize, gridSize - 2, gridSize - 2);
+                for (let i = 0; i < this.tail.length; i++) {
+                    ctx.fillRect(this.tail[i].x * gridSize, this.tail[i].y * gridSize, gridSize - 2, gridSize - 2);
+                }
+            }
+
+            checkCollision(otherSnake) {
+                if (this.x === otherSnake.x && this.y === otherSnake.y) return true;
+                for (let i = 0; i < otherSnake.tail.length; i++) {
+                    if (this.x === otherSnake.tail[i].x && this.y === otherSnake.tail[i].y) return true;
+                }
+                for (let i = 0; i < this.tail.length; i++) {
+                    if (this.x === this.tail[i].x && this.y === this.tail[i].y) return true;
+                }
+                return false;
+            }
+        }
+
+        let snake1, snake2, food;
+        let timeLeft = 60;
+
+        function initGame() {
+            snake1 = new Snake('green', 5, 5);
+            snake2 = new Snake('blue', 15, 15);
+            food = { x: 10, y: 10 };
+            spawnFood();
+        }
+
+        function spawnFood() {
+            food.x = Math.floor(Math.random() * tileCount);
+            food.y = Math.floor(Math.random() * tileCount);
+        }
+
+        function drawFood() {
+            ctx.fillStyle = 'red';
+            ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+        }
+
+        function gameLoop() {
+            ctx.fillStyle = '#121212';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            snake1.move();
+            snake2.move();
+
+            if (snake1.x === food.x && snake1.y === food.y) {
+                snake1.length++;
+                snake1.score++;
+                spawnFood();
+            }
+
+            if (snake2.x === food.x && snake2.y === food.y) {
+                snake2.length++;
+                snake2.score++;
+                spawnFood();
+            }
+
+            drawFood();
+            snake1.draw();
+            snake2.draw();
+
+            if (snake1.checkCollision(snake2) || snake2.checkCollision(snake1)) {
+                alert('Game Over!');
+                initGame();
+            }
+
+            scoreBoard1.textContent = snake1.score;
+            scoreBoard2.textContent = snake2.score;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            switch (e.key) {
+                case 'ArrowUp': if (snake1.dy === 0) { snake1.dx = 0; snake1.dy = -1; } break;
+                case 'ArrowDown': if (snake1.dy === 0) { snake1.dx = 0; snake1.dy = 1; } break;
+                case 'ArrowLeft': if (snake1.dx === 0) { snake1.dx = -1; snake1.dy = 0; } break;
+                case 'ArrowRight': if (snake1.dx === 0) { snake1.dx = 1; snake1.dy = 0; } break;
+                case 'w': if (snake2.dy === 0) { snake2.dx = 0; snake2.dy = -1; } break;
+                case 's': if (snake2.dy === 0) { snake2.dx = 0; snake2.dy = 1; } break;
+                case 'a': if (snake2.dx === 0) { snake2.dx = -1; snake2.dy = 0; } break;
+                case 'd': if (snake2.dx === 0) { snake2.dx = 1; snake2.dy = 0; } break;
+            }
+        });
+
+        initGame();
+        setInterval(gameLoop, 1000 / 10);
+        setInterval(() => {
+            timeLeft--;
+            timerDisplay.textContent = timeLeft;
+            if (timeLeft <= 0) {
+                alert('Time\'s up! Game Over!');
+                timeLeft = 60;
+                initGame();
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
