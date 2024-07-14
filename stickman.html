@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Flying Game</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: black;
+            color: white;
+            text-align: center;
+        }
+        canvas {
+            display: block;
+        }
+        .scoreboard {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+        }
+    </style>
+</head>
+<body>
+    <div class="scoreboard">
+        <div>Player 1 Score: <span id="score1">0</span></div>
+        <div>Player 2 Score: <span id="score2">0</span></div>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        const playerSize = 20;
+        const bulletSize = 5;
+        const enemySize = 20;
+        const powerUpSize = 15;
+
+        class Player {
+            constructor(color, x, y, up, down, left, right, shoot) {
+                this.color = color;
+                this.x = x;
+                this.y = y;
+                this.dx = 0;
+                this.dy = 0;
+                this.bullets = [];
+                this.score = 0;
+                this.up = up;
+                this.down = down;
+                this.left = left;
+                this.right = right;
+                this.shoot = shoot;
+            }
+
+            move() {
+                this.x += this.dx;
+                this.y += this.dy;
+
+                // Keep player within bounds
+                if (this.x < 0) this.x = 0;
+                if (this.x > width - playerSize) this.x = width - playerSize;
+                if (this.y < 0) this.y = 0;
+                if (this.y > height - playerSize) this.y = height - playerSize;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, playerSize, playerSize);
+            }
+
+            shootBullet() {
+                this.bullets.push({ x: this.x + playerSize / 2 - bulletSize / 2, y: this.y, dx: 0, dy: -5 });
+            }
+
+            updateBullets() {
+                this.bullets.forEach((bullet, index) => {
+                    bullet.y += bullet.dy;
+                    if (bullet.y < 0) {
+                        this.bullets.splice(index, 1);
+                    }
+                });
+            }
+
+            drawBullets() {
+                ctx.fillStyle = 'yellow';
+                this.bullets.forEach(bullet => {
+                    ctx.fillRect(bullet.x, bullet.y, bulletSize, bulletSize);
+                });
+            }
+        }
+
+        class Enemy {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.dx = 0;
+                this.dy = 2;
+            }
+
+            move() {
+                this.y += this.dy;
+            }
+
+            draw() {
+                ctx.fillStyle = 'red';
+                ctx.fillRect(this.x, this.y, enemySize, enemySize);
+            }
+        }
+
+        class PowerUp {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+            }
+
+            move() {
+                this.y += 1;
+            }
+
+            draw() {
+                ctx.fillStyle = 'green';
+                ctx.fillRect(this.x, this.y, powerUpSize, powerUpSize);
+            }
+        }
+
+        let player1, player2, enemies, powerUps;
+
+        function initGame() {
+            resizeCanvas();
+            player1 = new Player('blue', width / 4, height - 50, 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter');
+            player2 = new Player('red', width * 3 / 4, height - 50, 'w', 's', 'a', 'd', ' ');
+            enemies = [];
+            powerUps = [];
+        }
+
+        function spawnEnemy() {
+            const x = Math.random() * (width - enemySize);
+            const y = -enemySize;
+            enemies.push(new Enemy(x, y));
+        }
+
+        function spawnPowerUp() {
+            const x = Math.random() * (width - powerUpSize);
+            const y = -powerUpSize;
+            powerUps.push(new PowerUp(x, y));
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, width, height);
+
+            player1.move();
+            player2.move();
+
+            player1.updateBullets();
+            player2.updateBullets();
+
+            player1.draw();
+            player2.draw();
+
+            player1.drawBullets();
+            player2.drawBullets();
+
+            enemies.forEach((enemy, index) => {
+                enemy.move();
+                enemy.draw();
+                // Check collision with bullets
+                player1.bullets.forEach((bullet, bIndex) => {
+                    if (bullet.x < enemy.x + enemySize && bullet.x + bulletSize > enemy.x && bullet.y < enemy.y + enemySize && bullet.y + bulletSize > enemy.y) {
+                        enemies.splice(index, 1);
+                        player1.bullets.splice(bIndex, 1);
+                        player1.score++;
+                    }
+                });
+                player2.bullets.forEach((bullet, bIndex) => {
+                    if (bullet.x < enemy.x + enemySize && bullet.x + bulletSize > enemy.x && bullet.y < enemy.y + enemySize && bullet.y + bulletSize > enemy.y) {
+                        enemies.splice(index, 1);
+                        player2.bullets.splice(bIndex, 1);
+                        player2.score++;
+                    }
+                });
+                // Check collision with players
+                if ((player1.x < enemy.x + enemySize && player1.x + playerSize > enemy.x && player1.y < enemy.y + enemySize && player1.y + playerSize > enemy.y) ||
+                    (player2.x < enemy.x + enemySize && player2.x + playerSize > enemy.x && player2.y < enemy.y + enemySize && player2.y + playerSize > enemy.y)) {
+                    alert('Game Over!');
+                    initGame();
+                }
+            });
+
+            powerUps.forEach((powerUp, index) => {
+                powerUp.move();
+                powerUp.draw();
+                // Check collision with players
+                if (player1.x < powerUp.x + powerUpSize && player1.x + playerSize > powerUp.x && player1.y < powerUp.y + powerUpSize && player1.y + playerSize > powerUp.y) {
+                    powerUps.splice(index, 1);
+                    player1.score += 5;
+                }
+                if (player2.x < powerUp.x + powerUpSize && player2.x + playerSize > powerUp.x && player2.y < powerUp.y + powerUpSize && player2.y + playerSize > powerUp.y) {
+                    powerUps.splice(index, 1);
+                    player2.score += 5;
+                }
+            });
+
+            document.getElementById('score1').textContent = player1.score;
+            document.getElementById('score2').textContent = player2.score;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            switch (e.key) {
+                case player1.up: player1.dy = -3; break;
+                case player1.down: player1.dy = 3; break;
+                case player1.left: player1.dx = -3; break;
+                case player1.right: player1.dx = 3; break;
+                case player1.shoot: player1.shootBullet(); break;
+                case player2.up: player2.dy = -3; break;
+                case player2.down: player2.dy = 3; break;
+                case player2.left: player2.dx = -3; break;
+                case player2.right: player2.dx = 3; break;
+                case player2.shoot: player2.shootBullet(); break;
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            switch (e.key) {
+                case player1.up:
+                case player1.down: player1.dy = 0; break;
+                case player1.left:
+                case player1.right: player1.dx = 0; break;
+                case player2.up:
+                case player2.down: player2.dy = 0; break;
+                case player2.left:
+                case player2.right: player2.dx = 0; break;
+            }
+        });
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            width = canvas.width;
+            height = canvas.height;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        initGame();
+        setInterval(gameLoop, 1000 / 60);
+        setInterval(spawnEnemy, 2000);
+        setInterval(spawnPowerUp, 10000);
+    </script>
+</body>
+</html>

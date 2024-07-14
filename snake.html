@@ -9,15 +9,19 @@
 <body>
     <div class="container">
         <h1>Snake Game</h1>
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <canvas id="gameCanvas" width="600" height="600"></canvas>
         <div id="scoreBoard">
             <p>Player 1 Score: <span id="score1">0</span></p>
             <p>Player 2 Score: <span id="score2">0</span></p>
+            <p>Player 3 Score: <span id="score3">0</span></p>
+            <p>Player 4 Score: <span id="score4">0</span></p>
         </div>
         <div id="timer">Time: <span id="timeLeft">60</span> seconds</div>
         <div id="instructions">
             <p>Player 1 (Green): Arrow keys</p>
             <p>Player 2 (Blue): WASD keys</p>
+            <p>Player 3 (Red): IJKL keys</p>
+            <p>Player 4 (Yellow): TFHG keys</p>
         </div>
         <a href="index.html" class="game-button">Back to Home</a>
     </div>
@@ -26,6 +30,8 @@
         const ctx = canvas.getContext('2d');
         const scoreBoard1 = document.getElementById('score1');
         const scoreBoard2 = document.getElementById('score2');
+        const scoreBoard3 = document.getElementById('score3');
+        const scoreBoard4 = document.getElementById('score4');
         const timerDisplay = document.getElementById('timeLeft');
 
         const gridSize = 20;
@@ -79,12 +85,16 @@
             }
         }
 
-        let snake1, snake2, food;
+        let snakes, food;
         let timeLeft = 60;
 
         function initGame() {
-            snake1 = new Snake('green', 5, 5);
-            snake2 = new Snake('blue', 15, 15);
+            snakes = [
+                new Snake('green', 5, 5),
+                new Snake('blue', 15, 15),
+                new Snake('red', 25, 25),
+                new Snake('yellow', 35, 35)
+            ];
             food = { x: 10, y: 10 };
             spawnFood();
         }
@@ -95,7 +105,7 @@
         }
 
         function drawFood() {
-            ctx.fillStyle = 'red';
+            ctx.fillStyle = 'pink';
             ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
         }
 
@@ -103,44 +113,48 @@
             ctx.fillStyle = '#121212';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            snake1.move();
-            snake2.move();
+            snakes.forEach(snake => snake.move());
 
-            if (snake1.x === food.x && snake1.y === food.y) {
-                snake1.length++;
-                snake1.score++;
-                spawnFood();
-            }
-
-            if (snake2.x === food.x && snake2.y === food.y) {
-                snake2.length++;
-                snake2.score++;
-                spawnFood();
-            }
+            snakes.forEach((snake, index) => {
+                if (snake.x === food.x && snake.y === food.y) {
+                    snake.length++;
+                    snake.score++;
+                    spawnFood();
+                }
+                snake.draw();
+                for (let i = index + 1; i < snakes.length; i++) {
+                    if (snake.checkCollision(snakes[i])) {
+                        // Handle collision (optional: could reduce points or respawn snake)
+                    }
+                }
+            });
 
             drawFood();
-            snake1.draw();
-            snake2.draw();
 
-            if (snake1.checkCollision(snake2) || snake2.checkCollision(snake1)) {
-                alert('Game Over!');
-                initGame();
-            }
-
-            scoreBoard1.textContent = snake1.score;
-            scoreBoard2.textContent = snake2.score;
+            scoreBoard1.textContent = snakes[0].score;
+            scoreBoard2.textContent = snakes[1].score;
+            scoreBoard3.textContent = snakes[2].score;
+            scoreBoard4.textContent = snakes[3].score;
         }
 
         document.addEventListener('keydown', (e) => {
             switch (e.key) {
-                case 'ArrowUp': if (snake1.dy === 0) { snake1.dx = 0; snake1.dy = -1; } break;
-                case 'ArrowDown': if (snake1.dy === 0) { snake1.dx = 0; snake1.dy = 1; } break;
-                case 'ArrowLeft': if (snake1.dx === 0) { snake1.dx = -1; snake1.dy = 0; } break;
-                case 'ArrowRight': if (snake1.dx === 0) { snake1.dx = 1; snake1.dy = 0; } break;
-                case 'w': if (snake2.dy === 0) { snake2.dx = 0; snake2.dy = -1; } break;
-                case 's': if (snake2.dy === 0) { snake2.dx = 0; snake2.dy = 1; } break;
-                case 'a': if (snake2.dx === 0) { snake2.dx = -1; snake2.dy = 0; } break;
-                case 'd': if (snake2.dx === 0) { snake2.dx = 1; snake2.dy = 0; } break;
+                case 'ArrowUp': if (snakes[0].dy === 0) { snakes[0].dx = 0; snakes[0].dy = -1; } break;
+                case 'ArrowDown': if (snakes[0].dy === 0) { snakes[0].dx = 0; snakes[0].dy = 1; } break;
+                case 'ArrowLeft': if (snakes[0].dx === 0) { snakes[0].dx = -1; snakes[0].dy = 0; } break;
+                case 'ArrowRight': if (snakes[0].dx === 0) { snakes[0].dx = 1; snakes[0].dy = 0; } break;
+                case 'w': if (snakes[1].dy === 0) { snakes[1].dx = 0; snakes[1].dy = -1; } break;
+                case 's': if (snakes[1].dy === 0) { snakes[1].dx = 0; snakes[1].dy = 1; } break;
+                case 'a': if (snakes[1].dx === 0) { snakes[1].dx = -1; snakes[1].dy = 0; } break;
+                case 'd': if (snakes[1].dx === 0) { snakes[1].dx = 1; snakes[1].dy = 0; } break;
+                case 'i': if (snakes[2].dy === 0) { snakes[2].dx = 0; snakes[2].dy = -1; } break;
+                case 'k': if (snakes[2].dy === 0) { snakes[2].dx = 0; snakes[2].dy = 1; } break;
+                case 'j': if (snakes[2].dx === 0) { snakes[2].dx = -1; snakes[2].dy = 0; } break;
+                case 'l': if (snakes[2].dx === 0) { snakes[2].dx = 1; snakes[2].dy = 0; } break;
+                case 't': if (snakes[3].dy === 0) { snakes[3].dx = 0; snakes[3].dy = -1; } break;
+                case 'g': if (snakes[3].dy === 0) { snakes[3].dx = 0; snakes[3].dy = 1; } break;
+                case 'f': if (snakes[3].dx === 0) { snakes[3].dx = -1; snakes[3].dy = 0; } break;
+                case 'h': if (snakes[3].dx === 0) { snakes[3].dx = 1; snakes[3].dy = 0; } break;
             }
         });
 
