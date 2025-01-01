@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Finance Manager</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header>
+        <nav class="navbar">
+            <a href="#" class="logo">FinancePro</a>
+            <ul>
+                <li><a href="#budget">Budget</a></li>
+                <li><a href="#debt">Debt</a></li>
+                <li><a href="#investment">Investment</a></li>
+                <li><a href="#loan">Loan</a></li>
+                <li><a href="#tax">Tax</a></li>
+                <li><a href="#fund">Emergency Fund</a></li>
+                <li><a href="#goal">Savings Goal</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Intro Section -->
+    <section class="intro">
+        <h1>Finance Manager Tool</h1>
+        <p>Manage your finances smartly with interactive calculators for budgeting, debt repayment, investment, tax, and more.</p>
+    </section>
+
+    <!-- Budget Calculator -->
+    <section class="section" id="budget">
+        <h2>Monthly Budget Calculator</h2>
+        <div class="calculator">
+            <label for="budget-income">Monthly Income (₹):</label>
+            <input type="number" id="budget-income" placeholder="Enter income">
+            <label for="budget-expenses">Monthly Expenses (₹):</label>
+            <input type="number" id="budget-expenses" placeholder="Enter expenses">
+            <button onclick="calculateBudget()">Calculate</button>
+            <div id="budget-result"></div>
+            <div class="chart-container">
+                <canvas id="budgetChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Credit Card Debt -->
+    <section class="section" id="debt">
+        <h2>Credit Card Debt Calculator</h2>
+        <div class="calculator">
+            <label for="debt-amount">Total Debt (₹):</label>
+            <input type="number" id="debt-amount" placeholder="Enter debt amount">
+            <label for="interest-rate">Interest Rate (%):</label>
+            <input type="number" id="interest-rate" placeholder="Enter interest rate">
+            <label for="monthly-payment">Monthly Payment (₹):</label>
+            <input type="number" id="monthly-payment" placeholder="Enter monthly payment">
+            <button onclick="calculateDebt()">Calculate</button>
+            <div id="debt-result"></div>
+            <div class="chart-container">
+                <canvas id="debtChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Investment Growth -->
+    <section class="section" id="investment">
+        <h2>Investment Growth Calculator</h2>
+        <div class="calculator">
+            <label for="initial-investment">Initial Investment (₹):</label>
+            <input type="number" id="initial-investment" placeholder="Enter initial investment">
+            <label for="investment-rate">Annual Interest Rate (%):</label>
+            <input type="number" id="investment-rate" placeholder="Enter interest rate">
+            <label for="investment-years">Years:</label>
+            <input type="number" id="investment-years" placeholder="Enter number of years">
+            <button onclick="calculateInvestment()">Calculate</button>
+            <div id="investment-result"></div>
+            <div class="chart-container">
+                <canvas id="investmentChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loan Repayment -->
+    <section class="section" id="loan">
+        <h2>Loan Repayment Calculator</h2>
+        <div class="calculator">
+            <label for="loan-amount">Loan Amount (₹):</label>
+            <input type="number" id="loan-amount" placeholder="Enter loan amount">
+            <label for="loan-interest">Interest Rate (%):</label>
+            <input type="number" id="loan-interest" placeholder="Enter interest rate">
+            <label for="loan-term">Loan Term (Years):</label>
+            <input type="number" id="loan-term" placeholder="Enter loan term">
+            <button onclick="calculateLoan()">Calculate</button>
+            <div id="loan-result"></div>
+            <div class="chart-container">
+                <canvas id="loanChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tax Calculation -->
+    <section class="section" id="tax">
+        <h2>Tax Calculation</h2>
+        <div class="calculator">
+            <label for="salary">Annual Salary (₹):</label>
+            <input type="number" id="salary" placeholder="Enter salary">
+            <button onclick="calculateTaxes()">Calculate</button>
+            <div id="tax-result"></div>
+            <div class="chart-container">
+                <canvas id="taxChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Emergency Fund -->
+    <section class="section" id="fund">
+        <h2>Emergency Fund Calculator</h2>
+        <div class="calculator">
+            <label for="expenses-monthly">Monthly Expenses (₹):</label>
+            <input type="number" id="expenses-monthly" placeholder="Enter monthly expenses">
+            <button onclick="calculateFund()">Calculate</button>
+            <div id="fund-result"></div>
+        </div>
+    </section>
+
+    <!-- Savings Goal -->
+    <section class="section" id="goal">
+        <h2>Savings Goal Calculator</h2>
+        <div class="calculator">
+            <label for="goal-amount">Savings Goal (₹):</label>
+            <input type="number" id="goal-amount" placeholder="Enter savings goal">
+            <label for="saving-time">Time (Months):</label>
+            <input type="number" id="saving-time" placeholder="Enter time in months">
+            <button onclick="calculateSavings()">Calculate</button>
+            <div id="goal-result"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>FinancePro © 2025</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
