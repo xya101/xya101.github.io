@@ -268,7 +268,7 @@
                 options: [
                     { text: "Learn About Curriculum", next: "curriculum_menu" },
                     { text: "View Semester Details", next: "semester_menu" },
-                    { text: "Back to Main Menu", next: "welcome" }
+                    { text: "Back", next: "welcome" }
                 ]
             },
             
@@ -279,7 +279,7 @@
                     { text: "IT Components", next: "it_components" },
                     { text: "Agriculture Components", next: "agriculture_components" },
                     { text: "Management Components", next: "management_components" },
-                    { text: "Back to Main Menu", next: "welcome" }
+                    { text: "Back", next: "welcome" }
                 ]
             },
             
@@ -289,7 +289,7 @@
                 options: [
                     { text: "Agriculture Components", next: "agriculture_components" },
                     { text: "Management Components", next: "management_components" },
-                    { text: "Back to Curriculum", next: "curriculum_menu" }
+                    { text: "Back", next: "curriculum_menu" }
                 ]
             },
             
@@ -299,7 +299,7 @@
                 options: [
                     { text: "IT Components", next: "it_components" },
                     { text: "Management Components", next: "management_components" },
-                    { text: "Back to Curriculum", next: "curriculum_menu" }
+                    { text: "Back", next: "curriculum_menu" }
                 ]
             },
             
@@ -309,7 +309,7 @@
                 options: [
                     { text: "IT Components", next: "it_components" },
                     { text: "Agriculture Components", next: "agriculture_components" },
-                    { text: "Back to Curriculum", next: "curriculum_menu" }
+                    { text: "Back", next: "curriculum_menu" }
                 ]
             },
             
@@ -321,7 +321,7 @@
                     { text: "Semesters III & IV", next: "sem_3_4" },
                     { text: "Semesters V & VI", next: "sem_5_6" },
                     { text: "Semesters VII & VIII", next: "sem_7_8" },
-                    { text: "Back to Main Menu", next: "welcome" }
+                    { text: "Back", next: "welcome" }
                 ]
             },
             
@@ -330,7 +330,7 @@
                 message: "Semesters I & II focus on fundamentals: basics of computers, programming in C, web scripting, data structures, multimedia, and electronics. You'll also learn foundational agriculture and environmental studies to establish a cross-disciplinary foundation.",
                 options: [
                     { text: "Next Semesters (III & IV)", next: "sem_3_4" },
-                    { text: "Back to Semester Menu", next: "semester_menu" }
+                    { text: "Back", next: "semester_menu" }
                 ]
             },
             
@@ -339,7 +339,7 @@
                 options: [
                     { text: "Previous Semesters (I & II)", next: "sem_1_2" },
                     { text: "Next Semesters (V & VI)", next: "sem_5_6" },
-                    { text: "Back to Semester Menu", next: "semester_menu" }
+                    { text: "Back", next: "semester_menu" }
                 ]
             },
             
@@ -348,7 +348,7 @@
                 options: [
                     { text: "Previous Semesters (III & IV)", next: "sem_3_4" },
                     { text: "Next Semesters (VII & VIII)", next: "sem_7_8" },
-                    { text: "Back to Semester Menu", next: "semester_menu" }
+                    { text: "Back", next: "semester_menu" }
                 ]
             },
             
@@ -356,7 +356,7 @@
                 message: "Semesters VII & VIII focus on hands-on practical learning through internships, projects, industrial exposure, and soft skills development. This final year prepares you for the transition to your professional career.",
                 options: [
                     { text: "Previous Semesters (V & VI)", next: "sem_5_6" },
-                    { text: "Back to Semester Menu", next: "semester_menu" }
+                    { text: "Back", next: "semester_menu" }
                 ]
             },
             
@@ -366,94 +366,122 @@
                 options: [
                     { text: "Program Overview", next: "program_overview" },
                     { text: "Curriculum Details", next: "curriculum_menu" },
-                    { text: "Back to Main Menu", next: "welcome" }
+                    { text: "Back", next: "welcome" }
                 ]
             }
         };
 
-        // Chat functionality
         document.addEventListener('DOMContentLoaded', function() {
-            const chatToggle = document.getElementById('chat-toggle');
-            const closeChat = document.getElementById('close-chat');
-            const chatContainer = document.getElementById('chatbot-container');
-            const chatMessages = document.getElementById('chat-messages');
-            
-            // Toggle chat open/closed
-            chatToggle.addEventListener('click', function() {
-                chatContainer.classList.toggle('expanded');
-                if (chatContainer.classList.contains('expanded') && chatMessages.children.length === 0) {
-                    // Initialize chat with welcome message
-                    showTypingIndicator();
-                    setTimeout(() => {
-                        hideTypingIndicator();
-                        displayBotMessage('welcome');
-                    }, 1000);
-                }
+    const chatToggle = document.getElementById('chat-toggle');
+    const closeChat = document.getElementById('close-chat');
+    const chatContainer = document.getElementById('chatbot-container');
+    const chatMessages = document.getElementById('chat-messages');
+    
+    // Message history stack
+    const messageHistory = [];
+    
+    // Toggle chat open/closed
+    chatToggle.addEventListener('click', function() {
+        chatContainer.classList.toggle('expanded');
+        if (chatContainer.classList.contains('expanded') && chatMessages.children.length === 0) {
+            // Initialize chat with welcome message
+            showTypingIndicator();
+            setTimeout(() => {
+                hideTypingIndicator();
+                displayBotMessage('welcome');
+            }, 1000);
+        }
+    });
+    
+    // Close chat
+    closeChat.addEventListener('click', function() {
+        chatContainer.classList.remove('expanded');
+    });
+    
+    // Show typing indicator
+    function showTypingIndicator() {
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'message bot-message';
+        typingDiv.id = 'typing-indicator';
+        typingDiv.innerHTML = 'Typing<div class="typing-indicator"><span></span><span></span><span></span></div>';
+        chatMessages.appendChild(typingDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Hide typing indicator
+    function hideTypingIndicator() {
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+    
+    // Display bot message and options
+    function displayBotMessage(contentKey) {
+        const content = chatContent[contentKey];
+        if (!content) return;
+        
+        // Save the current message to history stack (except for the first welcome message)
+        if (chatMessages.children.length > 0) {
+            messageHistory.push({
+                key: contentKey,
+                element: chatMessages.lastElementChild
             });
+        }
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message bot-message';
+        messageDiv.textContent = content.message;
+        
+        // Add buttons
+        if (content.options && content.options.length > 0) {
+            const buttonDiv = document.createElement('div');
+            buttonDiv.id = 'button-options';
             
-            // Close chat
-            closeChat.addEventListener('click', function() {
-                chatContainer.classList.remove('expanded');
-            });
-            
-            // Show typing indicator
-            function showTypingIndicator() {
-                const typingDiv = document.createElement('div');
-                typingDiv.className = 'message bot-message';
-                typingDiv.id = 'typing-indicator';
-                typingDiv.innerHTML = 'Typing<div class="typing-indicator"><span></span><span></span><span></span></div>';
-                chatMessages.appendChild(typingDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-            
-            // Hide typing indicator
-            function hideTypingIndicator() {
-                const typingIndicator = document.getElementById('typing-indicator');
-                if (typingIndicator) {
-                    typingIndicator.remove();
-                }
-            }
-            
-            // Display bot message and options
-            function displayBotMessage(contentKey) {
-                const content = chatContent[contentKey];
-                if (!content) return;
-                
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message bot-message';
-                messageDiv.textContent = content.message;
-                
-                // Add buttons
-                if (content.options && content.options.length > 0) {
-                    const buttonDiv = document.createElement('div');
-                    buttonDiv.id = 'button-options';
+            content.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                if (option.text.toLowerCase().includes('back')) {
+                    button.classList.add('back-button');
                     
-                    content.options.forEach(option => {
-                        const button = document.createElement('button');
-                        button.className = 'option-button';
-                        if (option.text.toLowerCase().includes('back')) {
-                            button.classList.add('back-button');
+                    // Special handling for back button
+                    button.addEventListener('click', () => {
+                        // Remove the current message
+                        if (chatMessages.lastElementChild) {
+                            chatMessages.removeChild(chatMessages.lastElementChild);
                         }
-                        button.textContent = option.text;
-                        button.addEventListener('click', () => {
-                            // When button is clicked, show typing indicator
-                            showTypingIndicator();
-                            // After a delay, show the next message
-                            setTimeout(() => {
-                                hideTypingIndicator();
-                                displayBotMessage(option.next);
-                            }, 800);
-                        });
-                        buttonDiv.appendChild(button);
+                        
+                        // Get previous message from history
+                        if (messageHistory.length > 0) {
+                            const prevMessage = messageHistory.pop();
+                            // No need to re-add the previous message as it should still be in the DOM
+                            // Just make sure we scroll to it
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }
                     });
-                    
-                    messageDiv.appendChild(buttonDiv);
+                } else {
+                    button.addEventListener('click', () => {
+                        // When button is clicked, show typing indicator
+                        showTypingIndicator();
+                        // After a delay, show the next message
+                        setTimeout(() => {
+                            hideTypingIndicator();
+                            displayBotMessage(option.next);
+                        }, 800);
+                    });
                 }
                 
-                chatMessages.appendChild(messageDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-        });
+                button.textContent = option.text;
+                buttonDiv.appendChild(button);
+            });
+            
+            messageDiv.appendChild(buttonDiv);
+        }
+        
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+});
     </script>
 </body>
 </html>
