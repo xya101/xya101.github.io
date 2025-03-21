@@ -1,115 +1,227 @@
+<!-- This is the chatbot.html file you'll host on GitHub Pages -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CAIT Chatbot</title>
+    <title>Agri-IT Program Chatbot</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background: #f8f9fa; }
-        .chat-container { width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
-        .chat-box { flex: 1; padding: 10px; overflow-y: auto; background: #fff; border: 1px solid #ccc; border-radius: 10px; }
-        .chat-input { padding: 10px; background: #eee; display: flex; flex-wrap: wrap; }
-        button { margin: 5px; padding: 8px 12px; border: none; background: #007bff; color: white; border-radius: 5px; cursor: pointer; }
-        .user, .bot { padding: 8px; border-radius: 5px; margin: 5px; max-width: 80%; }
-        .user { background: #007bff; color: white; align-self: flex-end; }
-        .bot { background: #ddd; color: black; align-self: flex-start; }
+        /* Reset margins for iframe embedding */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        /* Container styles */
+        .chatbot-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background-color: white;
+            font-family: Arial, sans-serif;
+        }
+        
+        .chatbot-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chatbot-header h3 {
+            margin: 0;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            max-width: 80%;
+            padding: 10px;
+            border-radius: 15px;
+        }
+        
+        .bot-message {
+            background-color: #f1f0f0;
+            border-radius: 15px 15px 15px 0;
+            align-self: flex-start;
+        }
+        
+        .user-message {
+            background-color: #e2f7df;
+            border-radius: 15px 15px 0 15px;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #eee;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+        }
+        
+        .send-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
-
-<div class="chat-container">
-    <div class="chat-box" id="chatBox">
-        <div class="bot">Welcome to the CAIT Information Chatbot! Click a button below to get syllabus details.</div>
+    <div class="chatbot-container">
+        <div class="chatbot-header">
+            <h3>Agri-IT Program Assistant</h3>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                Hello! I'm the Agri-IT Program Assistant. How can I help you learn about our undergraduate program?
+            </div>
+        </div>
+        <div class="chat-input-container">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Type your question here...">
+            <button class="send-button" id="sendButton">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
     </div>
-    <div class="chat-input">
-        <button onclick="sendMessage('Semester I')">Semester I</button>
-        <button onclick="sendMessage('Semester II')">Semester II</button>
-        <button onclick="sendMessage('Semester III')">Semester III</button>
-        <button onclick="sendMessage('Semester IV')">Semester IV</button>
-        <button onclick="sendMessage('Semester V')">Semester V</button>
-        <button onclick="sendMessage('Semester VI')">Semester VI</button>
-        <button onclick="sendMessage('Semester VII')">Semester VII</button>
-        <button onclick="sendMessage('Semester VIII')">Semester VIII</button>
-        <button onclick="sendMessage('Electives')">Electives</button>
-    </div>
-</div>
 
-<script>
-    const responses = {
-        "Semester I": `**Semester I**  
-        1. Fundamentals of Computers (2-1-3)  
-        2. Programming in C (2-2-4)  
-        3. Introduction to Web Scripting (2-1-3)  
-        4. Fundamentals of Agronomy (2-1-3)  
-        5. Introductory Botany (1-1-2)  
-        6. Fundamentals of Horticulture (1-1-2)  
-        7. Engineering Mathematics - I (2-1-3)  
-        8. Comprehension and Communication Skills in English (1-1-2)  
-        9. NCC / NSS / Physical Education (0-1-1*)  
-        **Total Credits: 22**`,
+    <script>
+        // Program knowledge base
+        const programInfo = {
+            duration: "eight semesters",
+            focus: "IT, agriculture, and management subjects",
+            semester1and2: "Basics of computers, programming (C), web scripting, data structures, multimedia, and electronics, along with foundational agriculture and environmental studies.",
+            semester3and4: "Focus on OOP (Java), databases, UI/UX, PHP, software engineering, networks, Linux, and statistics, along with agricultural economics and meteorology.",
+            semester5and6: "Advanced IT courses like ASP.NET, Python, AI, ML, mobile app development, image processing, and IoT, with GIS and remote sensing in agriculture.",
+            semester7and8: "Practical learning through internships, projects, industrial exposure, and soft skills development.",
+            electives: "Options in data mining, crop physiology, nanotechnology, agricultural marketing, bioinformatics, and precision farming.",
+            approach: "A multi-disciplinary curriculum integrating IT and agriculture, emphasizing practical skills, real-world applications, and research projects."
+        };
+        
+        // Initialize elements
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendButton = document.getElementById('sendButton');
+        
+        // Handle sending messages
+        function sendMessage() {
+            const userMessage = chatInput.value.trim();
+            if (!userMessage) return;
+            
+            // Add user message to chat
+            addMessage(userMessage, 'user');
+            chatInput.value = '';
+            
+            // Process and respond to user message
+            setTimeout(() => {
+                const response = generateResponse(userMessage);
+                addMessage(response, 'bot');
+            }, 500);
+        }
+        
+        sendButton.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // Add a message to the chat
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+            messageDiv.textContent = text;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Generate a response based on user input
+        function generateResponse(userInput) {
+            userInput = userInput.toLowerCase();
+            
+            // Check for keywords and generate appropriate responses
+            if (userInput.includes('duration') || userInput.includes('how long') || userInput.includes('years')) {
+                return `The undergraduate program spans ${programInfo.duration}, providing comprehensive education in ${programInfo.focus}.`;
+            }
+            else if (userInput.includes('first year') || userInput.includes('semester 1') || userInput.includes('semester 2') || userInput.includes('semester i') || userInput.includes('semester ii')) {
+                return `In Semesters I & II, you'll learn: ${programInfo.semester1and2}`;
+            }
+            else if (userInput.includes('second year') || userInput.includes('semester 3') || userInput.includes('semester 4') || userInput.includes('semester iii') || userInput.includes('semester iv')) {
+                return `In Semesters III & IV, you'll learn: ${programInfo.semester3and4}`;
+            }
+            else if (userInput.includes('third year') || userInput.includes('semester 5') || userInput.includes('semester 6') || userInput.includes('semester v') || userInput.includes('semester vi')) {
+                return `In Semesters V & VI, you'll learn: ${programInfo.semester5and6}`;
+            }
+            else if (userInput.includes('fourth year') || userInput.includes('semester 7') || userInput.includes('semester 8') || userInput.includes('semester vii') || userInput.includes('semester viii') || userInput.includes('internship')) {
+                return `In Semesters VII & VIII, you'll focus on: ${programInfo.semester7and8}`;
+            }
+            else if (userInput.includes('elective') || userInput.includes('optional')) {
+                return `Elective courses include: ${programInfo.electives}`;
+            }
+            else if (userInput.includes('approach') || userInput.includes('teaching') || userInput.includes('learning')) {
+                return `Our Total Learning Approach: ${programInfo.approach}`;
+            }
+            else if (userInput.includes('curriculum') || userInput.includes('syllabus') || userInput.includes('subjects') || userInput.includes('courses') || userInput.includes('program')) {
+                return `The program spans ${programInfo.duration}, covering ${programInfo.focus}. In the first year, you'll learn ${programInfo.semester1and2.substring(0, 100)}... In the second year: ${programInfo.semester3and4.substring(0, 100)}... And so on, with electives in ${programInfo.electives.substring(0, 100)}...`;
+            }
+            else if (userInput.includes('hi') || userInput.includes('hello') || userInput.includes('hey')) {
+                return "Hello! How can I help you with information about our Agri-IT undergraduate program?";
+            }
+            else {
+                return "I'm not sure I understand. You can ask about program duration, specific semesters, electives, or our learning approach. How can I help you?";
+            }
+        }
 
-        "Semester II": `**Semester II**  
-        1. Data Structure Through C (2-2-4)  
-        2. Introduction to Multimedia (1-2-3)  
-        3. Electronic Governance (2-0-2)  
-        4. Environmental Studies and Disaster Management (2-1-3)  
-        5. Principles of Integrated Pest and Disease Management (2-1-3)  
-        6. Soil and Water Conservation Engineering (1-1-2)  
-        7. Engineering Mathematics - II (2-0-2)  
-        8. Basic Electronics (2-1-3)  
-        9. NCC / NSS / Physical Education (0-1-1*)  
-        **Total Credits: 22**`,
-
-        "Semester III": `**Semester III**  
-        1. OOP Using Java (2-1-3)  
-        2. Relational Database Management System (2-1-3)  
-        3. UI/UX Designing (3-0-3)  
-        4. Website Development Using PHP (2-1-3)  
-        5. Fundamentals of Agricultural Economics (2-0-2)  
-        6. Fundamentals of Soil Science (2-1-3)  
-        7. Fundamentals of Agricultural Extension Education (1-1-2)  
-        8. Basic Instrumentation (2-1-3)  
-        9. NCC / NSS / Physical Education (0-1-1*)  
-        10. Seminar-I (0-1-1*)  
-        **Total Credits: 22**`,
-
-        "Semester IV": "Details for Semester IV...",
-        "Semester V": "Details for Semester V...",
-        "Semester VI": "Details for Semester VI...",
-        "Semester VII": "Details for Semester VII...",
-        "Semester VIII": "Details for Semester VIII...",
-
-        "Electives": `**Elective-I**  
-        1. Information Retrieval (2-1-3)  
-        2. Data Warehouse and Data Mining in Agriculture (2-1-3)  
-        **Elective-II**  
-        1. Fundamentals of Crop Physiology (2-1-3)  
-        2. Nanotechnology and Precision Farming (2-1-3)  
-        **Elective-III**  
-        1. Operations Research (2-1-3)  
-        2. Crop Simulation Models (2-1-3)  
-        **Elective-IV**  
-        1. Protected Cultivation and Green Technology (2-1-3)  
-        2. Bioinformatics Computing (2-1-3)`
-    };
-
-    function sendMessage(choice) {
-        var chatBox = document.getElementById("chatBox");
-
-        var userMessage = document.createElement("div");
-        userMessage.className = "user";
-        userMessage.innerText = choice;
-        chatBox.appendChild(userMessage);
-
-        setTimeout(() => {
-            var botMessage = document.createElement("div");
-            botMessage.className = "bot";
-            botMessage.innerText = responses[choice] || "No information available.";
-            chatBox.appendChild(botMessage);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }, 500);
-    }
-</script>
-
+        // Handle messages from parent window if inside iframe
+        window.addEventListener('message', function(event) {
+            // Check origin for security if needed
+            if (event.data && event.data.message) {
+                // Process incoming message from parent
+                const userMessage = event.data.message;
+                addMessage(userMessage, 'user');
+                
+                setTimeout(() => {
+                    const response = generateResponse(userMessage);
+                    addMessage(response, 'bot');
+                    
+                    // Send response back to parent
+                    if (window.parent) {
+                        window.parent.postMessage({
+                            type: 'bot-response',
+                            message: response
+                        }, '*');
+                    }
+                }, 500);
+            }
+        });
+    </script>
 </body>
 </html>
