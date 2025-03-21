@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>College Chatbot</title>
+    <title>CAIT Chatbot</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f1f1f1; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background: #f8f9fa; }
         .chat-container { width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
-        .chat-box { flex: 1; padding: 10px; overflow-y: auto; background: #fff; border-bottom: 1px solid #ccc; }
-        .chat-input { padding: 10px; display: flex; background: #eee; }
-        input { flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 5px; }
-        button { margin-left: 5px; padding: 5px 10px; border: none; background: #007bff; color: white; cursor: pointer; }
+        .chat-box { flex: 1; padding: 10px; overflow-y: auto; background: #fff; border: 1px solid #ccc; border-radius: 10px; }
+        .chat-input { padding: 10px; background: #eee; display: flex; flex-wrap: wrap; }
+        button { margin: 5px; padding: 8px 12px; border: none; background: #007bff; color: white; border-radius: 5px; cursor: pointer; }
         .user, .bot { padding: 8px; border-radius: 5px; margin: 5px; max-width: 80%; }
         .user { background: #007bff; color: white; align-self: flex-end; }
         .bot { background: #ddd; color: black; align-self: flex-start; }
@@ -20,49 +19,95 @@
 
 <div class="chat-container">
     <div class="chat-box" id="chatBox">
-        <div class="bot">Hello! Ask me about the syllabus for any semester.</div>
+        <div class="bot">Welcome to the CAIT Information Chatbot! Click a button below to get syllabus details.</div>
     </div>
     <div class="chat-input">
-        <input type="text" id="userInput" placeholder="Type a semester (e.g., Semester I)..." />
-        <button onclick="sendMessage()">Send</button>
+        <button onclick="sendMessage('Semester I')">Semester I</button>
+        <button onclick="sendMessage('Semester II')">Semester II</button>
+        <button onclick="sendMessage('Semester III')">Semester III</button>
+        <button onclick="sendMessage('Semester IV')">Semester IV</button>
+        <button onclick="sendMessage('Semester V')">Semester V</button>
+        <button onclick="sendMessage('Semester VI')">Semester VI</button>
+        <button onclick="sendMessage('Semester VII')">Semester VII</button>
+        <button onclick="sendMessage('Semester VIII')">Semester VIII</button>
+        <button onclick="sendMessage('Electives')">Electives</button>
     </div>
 </div>
 
 <script>
-    const syllabus = {
-        "semester i": `Fundamentals of Computers, Programming in C, Web Scripting, Agronomy, Botany, Horticulture, Engineering Math I, Communication Skills, NCC/NSS`,
-        "semester ii": `Data Structure, Multimedia, E-Governance, Environmental Studies, Pest Management, Soil and Water Conservation, Engineering Math II, Basic Electronics, NCC/NSS`,
-        "semester iii": `Java OOP, RDBMS, UI/UX, PHP, Agricultural Economics, Soil Science, Extension Education, Basic Instrumentation, NCC/NSS, Seminar`,
-        "semester iv": `Software Engineering, .NET & ASP.NET, Computer Networks, Unix/Linux OS, Multimedia, Meteorology, Entrepreneurship, Statistical Methods, NCC/NSS, Seminar`,
-        "semester v": `Advance ASP.NET, Python, Electives, AI, Communication Skills, GIS & Remote Sensing, Project`,
-        "semester vi": `Web Data Management, Machine Learning, Mobile App Development, MATLAB, Image Processing, Embedded & IoT, Project`,
-        "semester vii": `Educational Tour, Experiential Learning I-III, Soft Skills, Project`,
-        "semester viii": `Project & Internship`,
-        "electives": `Elective-I: Data Mining, Information Retrieval. Elective-II: Crop Physiology, Nanotechnology, Farm Machinery. Elective-III: Operations Research, Crop Models, Agri-Marketing. Elective-IV: Green Tech, Bioinformatics`
+    const responses = {
+        "Semester I": `**Semester I**  
+        1. Fundamentals of Computers (2-1-3)  
+        2. Programming in C (2-2-4)  
+        3. Introduction to Web Scripting (2-1-3)  
+        4. Fundamentals of Agronomy (2-1-3)  
+        5. Introductory Botany (1-1-2)  
+        6. Fundamentals of Horticulture (1-1-2)  
+        7. Engineering Mathematics - I (2-1-3)  
+        8. Comprehension and Communication Skills in English (1-1-2)  
+        9. NCC / NSS / Physical Education (0-1-1*)  
+        **Total Credits: 22**`,
+
+        "Semester II": `**Semester II**  
+        1. Data Structure Through C (2-2-4)  
+        2. Introduction to Multimedia (1-2-3)  
+        3. Electronic Governance (2-0-2)  
+        4. Environmental Studies and Disaster Management (2-1-3)  
+        5. Principles of Integrated Pest and Disease Management (2-1-3)  
+        6. Soil and Water Conservation Engineering (1-1-2)  
+        7. Engineering Mathematics - II (2-0-2)  
+        8. Basic Electronics (2-1-3)  
+        9. NCC / NSS / Physical Education (0-1-1*)  
+        **Total Credits: 22**`,
+
+        "Semester III": `**Semester III**  
+        1. OOP Using Java (2-1-3)  
+        2. Relational Database Management System (2-1-3)  
+        3. UI/UX Designing (3-0-3)  
+        4. Website Development Using PHP (2-1-3)  
+        5. Fundamentals of Agricultural Economics (2-0-2)  
+        6. Fundamentals of Soil Science (2-1-3)  
+        7. Fundamentals of Agricultural Extension Education (1-1-2)  
+        8. Basic Instrumentation (2-1-3)  
+        9. NCC / NSS / Physical Education (0-1-1*)  
+        10. Seminar-I (0-1-1*)  
+        **Total Credits: 22**`,
+
+        "Semester IV": "Details for Semester IV...",
+        "Semester V": "Details for Semester V...",
+        "Semester VI": "Details for Semester VI...",
+        "Semester VII": "Details for Semester VII...",
+        "Semester VIII": "Details for Semester VIII...",
+
+        "Electives": `**Elective-I**  
+        1. Information Retrieval (2-1-3)  
+        2. Data Warehouse and Data Mining in Agriculture (2-1-3)  
+        **Elective-II**  
+        1. Fundamentals of Crop Physiology (2-1-3)  
+        2. Nanotechnology and Precision Farming (2-1-3)  
+        **Elective-III**  
+        1. Operations Research (2-1-3)  
+        2. Crop Simulation Models (2-1-3)  
+        **Elective-IV**  
+        1. Protected Cultivation and Green Technology (2-1-3)  
+        2. Bioinformatics Computing (2-1-3)`
     };
 
-    function sendMessage() {
-        var userInput = document.getElementById("userInput").value.toLowerCase().trim();
-        if (!userInput) return;
-
+    function sendMessage(choice) {
         var chatBox = document.getElementById("chatBox");
 
         var userMessage = document.createElement("div");
         userMessage.className = "user";
-        userMessage.innerText = userInput;
+        userMessage.innerText = choice;
         chatBox.appendChild(userMessage);
-
-        var botReply = syllabus[userInput] || "I don't have information on that. Try asking about a semester (e.g., 'Semester I') or 'Electives'.";
 
         setTimeout(() => {
             var botMessage = document.createElement("div");
             botMessage.className = "bot";
-            botMessage.innerText = botReply;
+            botMessage.innerText = responses[choice] || "No information available.";
             chatBox.appendChild(botMessage);
             chatBox.scrollTop = chatBox.scrollHeight;
         }, 500);
-
-        document.getElementById("userInput").value = "";
     }
 </script>
 
