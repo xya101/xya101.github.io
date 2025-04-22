@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIT 3D Model Viewer with AR</title>
+  <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/model-viewer/3.0.1/model-viewer.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100vh;
+      background: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+    
+    model-viewer {
+      width: 100%;
+      height: 100%;
+      background-color: #f5f5f5;
+    }
+    
+    #lazy-load-poster {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background-color: #f0f0f0;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    
+    #button-load {
+      background-color: #2196F3;
+      color: white;
+      cursor: pointer;
+      border-radius: 6px;
+      display: inline-block;
+      padding: 12px 24px;
+      font-weight: 500;
+      box-shadow: 0 0 8px rgba(0, 0, 0, .2);
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate3d(-50%, -50%, 0);
+      z-index: 100;
+      font-family: Arial, sans-serif;
+    }
+    
+    .flat-ground {
+      position: absolute;
+      width: 1000px;
+      height: 1000px;
+      left: 50%;
+      top: calc(50% + 1px);
+      transform: translate(-50%, 0);
+      background: linear-gradient(#f0f0f0, #e0e0e0);
+      border-radius: 0;
+    }
+    
+    .controls {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 4px;
+      padding: 10px;
+      color: white;
+    }
+    
+    .ar-button {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      padding: 8px 16px;
+      background: #4CAF50;
+      color: white;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <!-- Enhanced model viewer with AR support -->
+  <model-viewer 
+    src="2.glb"
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    ar-scale="fixed"
+    camera-controls
+    touch-action="pan-y"
+    reveal="manual"
+    auto-rotate
+    rotation-per-second="30deg"
+    shadow-intensity="1.0"
+    shadow-softness="0.7"
+    environment-image="neutral"
+    exposure="1.2"
+    tone-mapping="aces"
+    skybox-image="aa.hdr"
+    xr-environment
+    alt="3D model with AR support">
+    
+    <!-- Custom poster/placeholder -->
+    <div id="lazy-load-poster" slot="poster"></div>
+    <div id="button-load" slot="poster">Load 3D Model</div>
+    
+    <!-- Ground reflection plane (visible in non-AR mode) -->
+    <div slot="ar-footer" class="flat-ground"></div>
+    
+    <!-- Add a lighting hotspot for dramatic lighting -->
+    <div class="light" slot="light-probe" style="transform: translate3d(10px, -20px, 10px)"></div>
+    
+    <!-- Custom AR button text -->
+    <button slot="ar-button" class="ar-button">View in AR</button>
+  </model-viewer>
+  
+  <div class="controls">
+    <p>Drag to rotate • Scroll to zoom • AR button for Augmented Reality</p>
+  </div>
+
+  <script>
+    // Handle the click event on the load button
+    document.querySelector('#button-load').addEventListener('click', 
+      () => document.querySelector('model-viewer').dismissPoster());
+  </script>
+</body>
+</html>
