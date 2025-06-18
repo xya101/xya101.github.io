@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Bestest Bitch 🎂</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+
+        #threejs-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(45deg, rgba(255, 0, 0, 0.1), rgba(0, 0, 0, 0.8));
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #ff0000;
+        }
+
+        .title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: clamp(2rem, 8vw, 6rem);
+            background: linear-gradient(45deg, #ff0000, #ffffff, #ff0000);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+            margin-bottom: 1rem;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #ff6b6b;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .game-card {
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.1), rgba(0, 0, 0, 0.9));
+            border: 2px solid #ff0000;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 0, 0, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s;
+            opacity: 0;
+        }
+
+        .game-card:hover::before {
+            animation: shimmer 0.5s ease-in-out;
+            opacity: 1;
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(45deg) translateX(-100%); }
+            100% { transform: rotate(45deg) translateX(100%); }
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(255, 0, 0, 0.3);
+            border-color: #ffffff;
+        }
+
+        .game-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #ff0000;
+            font-family: 'Bebas Neue', cursive;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-family: 'Orbitron', monospace;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .card-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            width: 80px;
+            height: 120px;
+            background: linear-gradient(135deg, #ff0000, #990000);
+            border: 2px solid #ffffff;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            transform-style: preserve-3d;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0.5rem;
+        }
+
+        .card:hover {
+            transform: rotateY(10deg) scale(1.1);
+            box-shadow: 0 10px 20px rgba(255, 0, 0, 0.4);
+        }
+
+        .card.flipped {
+            animation: flipCard 0.6s ease-in-out;
+        }
+
+        @keyframes flipCard {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(90deg); }
+            100% { transform: rotateY(0deg); }
+        }
+
+        .game-area {
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quote-container {
+            background: rgba(255, 0, 0, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border-left: 4px solid #ff0000;
+            font-style: italic;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #ff0000;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .option-btn:hover {
+            background: rgba(255, 0, 0, 0.2);
+            transform: scale(1.05);
+        }
+
+        .rps-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .rps-choice {
+            font-size: 4rem;
+            cursor: pointer;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            border-radius: 50%;
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        .rps-choice:hover {
+            transform: scale(1.2);
+            background: rgba(255, 0, 0, 0.3);
+        }
+
+        .curse-game {
+            position: relative;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        .curse-spirit {
+            position: absolute;
+            font-size: 2rem;
+            color: #ff0000;
+            cursor: pointer;
+            animation: float 2s ease-in-out infinite;
+            user-select: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .message-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #ff0000;
+            color: white;
+            padding: 1rem;
+            font-family: 'Orbitron', monospace;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 1rem;
+        }
+
+        .message-input::placeholder {
+            color: #ff6b6b;
+        }
+
+        .cursed-message {
+            font-size: 1.5rem;
+            color: #ff0000;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+            margin: 1rem 0;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 1.2rem;
+            color: #ff0000;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .glitch {
+            animation: glitch 0.3s ease-in-out;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            
+            .card-container {
+                gap: 0.5rem;
+            }
+            
+            .card {
+                width: 60px;
+                height: 90px;
+                font-size: 0.7rem;
+            }
+            
+            .rps-choice {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="threejs-bg"></div>
+    
+    <div class="container">
+        <header class="header">
+            <h1 class="title">BIRTHDAY DOMAIN</h1>
+            <p class="subtitle">Enter the Birthday Curse Realm</p>
+        </header>
+
+        <div class="games-grid">
+            <!-- Card Guessing Game -->
+            <div class="game-card">
+                <h2 class="game-title"><i class="fas fa-clone"></i> CARD DIVINATION</h2>
+                <div class="game-area">
+                    <p>Choose a card to reveal your birthday fate...</p>
+                    <div class="card-container" id="cardContainer">
+                        <div class="card" data-message="🎂 Happy Birthday Bestest Bitch 💖💥">?</div>
+                        <div class="card" data-message="Try again loser">?</div>
+                        <div class="card" data-message="Almost but nope">?</div>
+                        <div class="card" data-message="Not today 😈">?</div>
+                        <div class="card" data-message="Nice try, amateur">?</div>
+                    </div>
+                    <button class="btn" onclick="resetCards()">Reset Cards</button>
+                </div>
+            </div>
+
+            <!-- Anime Quote Game -->
+            <div class="game-card">
+                <h2 class="game-title"><i class="fas fa-quote-left"></i> CURSED WISDOM</h2>
+                <div class="game-area">
+                    <div class="quote-container" id="quoteDisplay">
+                        "Throughout heaven and earth, I alone am the honored one."
+                    </div>
+                    <div class="options-container">
+                        <button class="option-btn" onclick="checkAnswer(true)">Gojo Satoru</button>
+                        <button class="option-btn" onclick="checkAnswer(false)">Naruto Uzumaki</button>
+                        <button class="option-btn" onclick="checkAnswer(false)">Light Yagami</button>
+                        <button class="option-btn" onclick="checkAnswer(false)">Saitama</button>
+                    </div>
+                    <button class="btn" onclick="nextQuote()">Next Quote</button>
+                </div>
+            </div>
+
+            <!-- Rock Paper Scissors -->
+            <div class="game-card">
+                <h2 class="game-title"><i class="fas fa-hand-rock"></i> INFINITY CLASH</h2>
+                <div class="game-area">
+                    <p>Challenge the strongest sorcerer!</p>
+                    <div class="rps-container">
+                        <div class="rps-choice" onclick="playRPS('rock')">🗿</div>
+                        <div style="color: #ff0000;">VS</div>
+                        <div class="rps-choice" onclick="playRPS('paper')">📄</div>
+                        <div class="rps-choice" onclick="playRPS('scissors')">✂️</div>
+                    </div>
+                    <div id="rpsResult" class="score-display"></div>
+                </div>
+            </div>
+
+            <!-- Curse Clicking Game -->
+            <div class="game-card">
+                <h2 class="game-title"><i class="fas fa-crosshairs"></i> CURSE ELIMINATION</h2>
+                <div class="game-area">
+                    <p>Exorcise the cursed spirits! Score: <span id="curseScore">0</span></p>
+                    <div class="curse-game" id="curseGame">
+                        <div class="score-display">Click the red spirits before they vanish!</div>
+                    </div>
+                    <button class="btn" onclick="startCurseGame()">Start Hunt</button>
+                </div>
+            </div>
+
+            <!-- Message Cursifier -->
+            <div class="game-card">
+                <h2 class="game-title"><i class="fas fa-magic"></i> BIRTHDAY CURSE</h2>
+                <div class="game-area">
+                    <p>Transform your birthday wish into a cursed blessing!</p>
+                    <input type="text" class="message-input" id="messageInput" placeholder="Type your birthday message...">
+                    <button class="btn" onclick="cursifyMessage()">Apply Curse</button>
+                    <div class="cursed-message" id="cursedOutput"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Three.js Background
+        let scene, camera, renderer, torus;
+        
+        function initThreeJS() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('threejs-bg').appendChild(renderer.domElement);
+
+            // Create glowing torus
+            const geometry = new THREE.TorusGeometry(10, 3, 16, 100);
+            const material = new THREE.MeshBasicMaterial({
+                color: 0xff0000,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.3
+            });
+            torus = new THREE.Mesh(geometry, material);
+            scene.add(torus);
+
+            // Add particles
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 1000;
+            const posArray = new Float32Array(particlesCount * 3);
+            
+            for(let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 100;
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.1,
+                color: 0xff0000,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+
+            camera.position.z = 30;
+            
+            animate();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (torus) {
+                torus.rotation.x += 0.01;
+                torus.rotation.y += 0.01;
+                torus.rotation.z += 0.005;
+            }
+            
+            renderer.render(scene, camera);
+        }
+
+        // Initialize animations and Three.js
+        window.addEventListener('load', () => {
+            initThreeJS();
+            
+            // Animate title and subtitle
+            anime({
+                targets: '.title',
+                scale: [0.5, 1],
+                opacity: [0, 1],
+                duration: 1000,
+                easing: 'easeOutBounce'
+            });
+            
+            anime({
+                targets: '.subtitle',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                duration: 800,
+                delay: 500,
+                easing: 'easeOutQuad'
+            });
+            
+            // Animate game cards
+            anime({
+                targets: '.game-card',
+                translateY: [50, 0],
+                opacity: [0, 1],
+                duration: 800,
+                delay: anime.stagger(200, {start: 800}),
+                easing: 'easeOutQuad'
+            });
+        });
+
+        // Game Logic
+        let gameStates = {
+            curseScore: 0,
+            curseGameActive: false,
+            quotes: [
+                { text: "Throughout heaven and earth, I alone am the honored one.", correct: 0 },
+                { text: "I'll become the strongest to protect everyone!", correct: 1 },
+                { text: "I am justice! I am the god of this new world!", correct: 2 },
+                { text: "I'm just a hero for fun.", correct: 3 }
+            ],
+            currentQuoteIndex: 0
+        };
+
+        // Card Game
+        function shuffleCards() {
+            const container = document.getElementById('cardContainer');
+            const cards = Array.from(container.children);
+            
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                container.appendChild(cards[j]);
+            }
+        }
+
+        document.getElementById('cardContainer').addEventListener('click', (e) => {
+            if (e.target.classList.contains('card')) {
+                e.target.classList.add('flipped', 'glitch');
+                e.target.textContent = e.target.dataset.message;
+                
+                setTimeout(() => {
+                    e.target.classList.remove('glitch');
+                }, 300);
+            }
+        });
+
+        function resetCards() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.textContent = '?';
+                card.classList.remove('flipped');
+            });
+            shuffleCards();
+        }
+
+        // Quote Game
+        function checkAnswer(isCorrect) {
+            const result = isCorrect ? "Correct! You know your anime!" : "Wrong! Study more anime!";
+            document.getElementById('quoteDisplay').textContent = result;
+            document.getElementById('quoteDisplay').classList.add('glitch');
+            
+            setTimeout(() => {
+                document.getElementById('quoteDisplay').classList.remove('glitch');
+            }, 300);
+        }
+
+        function nextQuote() {
+            gameStates.currentQuoteIndex = (gameStates.currentQuoteIndex + 1) % gameStates.qu
